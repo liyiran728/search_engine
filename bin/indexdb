@@ -1,0 +1,35 @@
+#!/bin/bash
+set -Eeuo pipefail
+usage() {
+  echo "Usage: $0 (create|destroy|reset)"
+}
+if [ $# -ne 1 ]; then
+  usage
+  exit 1
+fi
+# Parse argument.  $1 is the first argument
+case $1 in
+  "create")
+  if [ -f var/index.sqlite3 ];
+  then
+    echo "Error: database already exists"
+    exit 1
+  else
+    mkdir -p var/
+    sqlite3 var/index.sqlite3 < search/search/sql/index.sql
+  fi
+    ;;
+  "destroy")
+    rm -f var/index.sqlite3
+    ;;
+  "reset")
+    # same thing as destroy followed by create
+    rm -f var/index.sqlite3
+    mkdir -p var/
+    sqlite3 var/index.sqlite3 < search/search/sql/index.sql
+    ;;
+  *)
+    usage
+    exit 1
+    ;;
+esac
